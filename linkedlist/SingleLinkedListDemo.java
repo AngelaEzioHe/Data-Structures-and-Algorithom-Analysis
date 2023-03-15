@@ -1,5 +1,9 @@
 package linkedlist;
-//节点的删除（delete部分）有问题，其余部分正常
+/**
+ *节点的删除（delete部分）有问题，其余部分正常
+ */
+
+import java.util.Stack;
 
 /**
  * @author 何蛋
@@ -25,7 +29,6 @@ public class SingleLinkedListDemo {
             singleLinkedList.add(hero3);
             singleLinkedList.add(hero4);
          */
-
         //加入按照编号的顺序
         singleLinkedList.addByOrder(hero1);
         singleLinkedList.addByOrder(hero4);
@@ -33,6 +36,7 @@ public class SingleLinkedListDemo {
         singleLinkedList.addByOrder(hero3);
         //显示
         singleLinkedList.list();
+        System.out.println();
 
         //测试修改节点的代码
         HeroNode newHeroNode = new HeroNode(2, "小卢", "玉麒麟~~");
@@ -40,20 +44,150 @@ public class SingleLinkedListDemo {
         //显示
         System.out.println("修改后的链表情况");
         singleLinkedList.list();
+        System.out.println();
 
         //删除一个节点
         //singleLinkedList.delete(1);
-        singleLinkedList.delete(4);
+        //singleLinkedList.delete(4);
         //显示
-        System.out.println("删除后的链表情况~~~");
-        singleLinkedList.list();
+        //System.out.println("删除后的链表情况~~~");
+        //singleLinkedList.list();
+
+        //测试 求单链表中有效节点的个数
+        System.out.println("有效的节点个数=" + getLength(singleLinkedList.getHead()));
+        System.out.println();
+
+        //测试是否得到倒数第k个节点
+        HeroNode res = findLastIndexNode(singleLinkedList.getHead(), 1);
+        System.out.println("倒数第1个节点：");
+        System.out.println("res=" + res);
+        System.out.println();
+
+//        System.out.println("反转单链表~~~");
+//        reverseList(singleLinkedList.getHead());
+//        singleLinkedList.list();
+//        System.out.println();
+
+        //测试逆序打印单链表
+        System.out.println("测试逆序打印单链表~~~");
+        reversePrint(singleLinkedList.getHead());
     }
+
+    //将单链表逆序打印
+    //利用栈
+    public static void reversePrint(HeroNode head) {
+        if (head.next == null) {
+            return; //空链表，不能打印
+        }
+        //创建一个栈，将各个节点压入栈
+        Stack<HeroNode> stack = new Stack<HeroNode>();
+        HeroNode cur = head.next;
+        //将链表的所有节点压入栈
+        while (cur != null) {
+            stack.push(cur);
+            cur = cur.next; // cur后移，这样可以压入下一个节点
+        }
+        //将栈中节点进行打印，pop 出栈
+        while (stack.size() > 0) {
+            System.out.println(stack.pop());
+        }
+    }
+
+    //将单链表翻转
+    /*
+        思路：
+        1.先定义一个节点 reverseHead=newHeadNode();
+        2.从头到尾遍历原来的链表，每遍历一个节点，就将其取出，并放在新的链表的最前端
+        3.原来的链表的 head.next = reverseHead.next
+     */
+    public static void reverseList(HeroNode head) {
+        //如果当前链表为空，或只有一个节点，无需翻转，直接返回
+        if (head.next == null || head.next.next == null) {
+            return;
+        }
+        //定义一个辅助变量,帮助我们遍历原来的链表
+        HeroNode cur = head.next;
+        HeroNode next = null; //指向当前节点[cur]的下一个节点
+        HeroNode reverseHead = new HeroNode(0, "", "");
+        //遍历原来的链表，每遍历一个节点，就将其取出，并放在新的链表 reverseHead 的最前端
+        while (cur != null) {
+            next = cur.next; //先暂时保存当前节点的下一个节点，后面要用
+            cur.next = reverseHead.next; //将 cur 的下一个节点指向新的链表的最前端
+            reverseHead.next = cur; //将头节点和后面的节点连接起来
+            cur = next; //让 cur 后移
+        }
+        //将 head.next 指向 reverseHead.next ，实现单链表的反转
+        head.next = reverseHead.next;
+    }
+
+    //查找单链表中的倒数第k个节点
+    /*
+        思路：
+        1.编写一个方法接收head节点，同时接收一个index
+        2.index表示是倒数index个节点
+        3.先把链表从头到尾进行遍历，得到链表总长度，调用 getlength
+        4.得到 size 后，从链表第一个节点开始遍历(size - index)个
+        5.如果找到，返回该节点；否则返回空
+     */
+    public static HeroNode findLastIndexNode(HeroNode head, int index) {
+        //如果链表为空，返回null
+        if (head.next == null) {
+            return null; // 没有找到
+        }
+        //第一个遍历得到链表的长度
+        int size = getLength(head);
+        //第二次遍历 size-index位置，就是倒数第k个节点
+        //先做一个index的校验
+        if (index <= 0 || index > size) {
+            return null;
+        }
+        //定义一个辅助变量,for循环定位到倒数的index个
+        HeroNode cur = head.next;
+        for (int i = 0; i < size - index; i++) {
+            cur = cur.next;
+        }
+        return cur;
+    }
+
+    //方法：获取到单链表的节点的个数（如果是带头节点的链表，不统计头节点）
+
+    /**
+     * @param head 链表的头节点
+     * @return 返回的是有效节点的个数
+     */
+    public static int getLength(HeroNode head) {
+        if (head.next == null) { //空链表
+            return 0;
+        }
+        int length = 0;
+        //定义一个辅助变量,这里我们没有统计头节点
+        HeroNode cur = head.next;
+        while (cur != null) {
+            length++;
+            cur = cur.next;
+        }
+        return length;
+    }
+
+    //从头到尾逆序打印单链表
+    /*
+        思路：
+        方式1：先反转，再遍历。问题是会破坏原有的单链表结构，不建议
+        方式2：利用 栈 这个数据结构，将各个节点压入栈中，然后利用 栈 先进后出的特点，实现了逆序打印的效果
+     */
 }
 
 //定义SingleLinkedList 管理我们的英雄
+
+
 class SingleLinkedList {
     //先初始化一个头节点，头节点不要动,不存放具体的数据
     private HeroNode head = new HeroNode(0, "", "");
+
+    //返回头节点
+    public HeroNode getHead() {
+        return head;
+    }
 
     //添加节点到单向链表
     //当不考虑编号顺序时
@@ -138,18 +272,19 @@ class SingleLinkedList {
         }
     }
 
+    //删除节点
     /*
         从单链表中删除一个节点的思路
         1.先找到需要删除的这个节点的前一个节点 temp
         2.temp.next = temp.next.next
         3.被删除的节点将不会有其他引用指向，会被垃圾回收机制回收
      */
-    //删除节点
     /*
         思路：
         1.head不能动，因此我们需要一个temp辅助节点找到待删除节点的前一个节点
         2. 在比较时，是temp.next.no 和需要删除的节点的 no 的比较
      */
+    /*
     public void delete(int no) {
         HeroNode temp = head;
         boolean flag = false; //标志是否找到对待删除节点的
@@ -172,6 +307,7 @@ class SingleLinkedList {
             }
         }
     }
+     */
 
     //显示链表[遍历]
     public void list() {
@@ -209,8 +345,6 @@ class HeroNode {
     }
 
     //为了显示方便，重写toString
-
-
     @Override
     public String toString() {
 
