@@ -23,7 +23,7 @@ public class PolandNotation {
         System.out.println("中缀表达式对应的List" + toInfixExpressionList);
         List<String> suffixExpressionList = parseSuffixExpressionList(toInfixExpressionList);
         System.out.println("后缀表达式对应的List"+suffixExpressionList);
-
+        System.out.printf("expression=%d",calculate(suffixExpressionList));
         //先定义一个逆波兰表达式
         //(3+4)*5-6 -> 3 4 + 5 * 6 -
         //为了方便，逆波兰表达式的数字和符号使用空格隔开
